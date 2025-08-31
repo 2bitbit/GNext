@@ -21,7 +21,9 @@ func enableCORS(w http.ResponseWriter) {
 }
 
 func messageHandler(w http.ResponseWriter, r *http.Request) {
-	enableCORS(w)
+	if os.Getenv("ENV") != "production" { // 非生产环境允许跨域请求，便于本地调试
+		enableCORS(w)
+	}
 
 	message := Message{Text: "Hello from Go backend!"}
 	jsonData, err := json.Marshal(message)
@@ -46,7 +48,6 @@ func main() {
 
 	http.HandleFunc("/api/message", messageHandler)
 	fmt.Printf("Go server listening on port %s\n", port)
-	http.ListenAndServe(":"+port, nil)
 
 	// 使用变量来启动服务
 	log.Fatal(http.ListenAndServe(":"+port, nil)) // log.Fatal 的作用是当 http.ListenAndServe 返回错误时，打印错误信息并终止程序。
